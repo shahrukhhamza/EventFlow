@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if admin_view %}All Bookings{% else %}My Bookings{% endif %} | UniEvents{% endblock %}
+
+{% block content %}
+<section class="container">
+    <h2 class="section-title mb-4">{% if admin_view %}All Bookings{% else %}My Bookings{% endif %}</h2>
+
+    {% if bookings %}
+    <div class="table-responsive card p-3">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    {% if admin_view %}
+                    <th>Student</th>
+                    <th>Email</th>
+                    {% endif %}
+                    <th>Event</th>
+                    <th>Date</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    {% if admin_view %}
+                    <td>{{ booking['student_name'] }}</td>
+                    <td>{{ booking['email'] }}</td>
+                    {% endif %}
+                    <td>{{ booking['title'] }}</td>
+                    <td>{{ booking['date'] }}</td>
+                    <td>{{ booking['location'] }}</td>
+                    <td><span class="badge text-bg-success">{{ booking['booking_status'] }}</span></td>
+                    <td class="text-end">
+                        <form class="d-inline" method="POST" action="{{ url_for('cancel_booking', booking_id=booking['booking_id']) }}" onsubmit="return confirm('Cancel this booking?');">
+                            <button class="btn btn-outline-danger btn-sm" type="submit">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state text-center p-5">
+        <h4>No bookings found</h4>
+        <p class="text-muted">Book an event to see it here.</p>
+        <a href="{{ url_for('events') }}" class="btn btn-dark">Browse Events</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

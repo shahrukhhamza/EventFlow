@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | UniEvents{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-5">
+            <div class="auth-card p-4 p-md-5">
+                <h2 class="mb-3">Login</h2>
+                <p class="text-muted mb-4">Access your account to manage event bookings.</p>
+
+                <form method="POST" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email</label>
+                        <input id="email" type="email" name="email" placeholder="student@university.edu" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <input id="password" type="password" name="password" placeholder="Enter password" class="form-control" required>
+                    </div>
+
+                    <button class="btn btn-dark w-100" type="submit">Login</button>
+                </form>
+
+                <p class="small mt-3 mb-0">No account? <a href="{{ url_for('signup') }}">Sign up here</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

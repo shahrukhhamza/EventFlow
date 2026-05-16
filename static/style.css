@@ -1,0 +1,134 @@
+:root {
+    --bg: #f4f7fb;
+    --surface: #ffffff;
+    --ink: #1a2332;
+    --muted: #657089;
+    --brand: #0f4c81;
+    --brand-soft: #dceaf7;
+    --line: #dce1eb;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background:
+        radial-gradient(circle at 8% 10%, #d7edf9 0, transparent 35%),
+        radial-gradient(circle at 90% 12%, #ffeec9 0, transparent 30%),
+        var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    min-height: 100vh;
+}
+
+.app-navbar {
+    background: linear-gradient(120deg, #16324f, #0f4c81);
+    box-shadow: 0 8px 28px rgba(12, 33, 58, 0.28);
+}
+
+.navbar .nav-link,
+.navbar .navbar-brand,
+.navbar .navbar-text {
+    color: #f8fbff;
+}
+
+.main-content {
+    min-height: calc(100vh - 160px);
+}
+
+.hero-wrap {
+    padding: 4rem 0 3rem;
+}
+
+.eyebrow {
+    display: inline-block;
+    background: var(--brand-soft);
+    border-radius: 999px;
+    color: var(--brand);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.38rem 0.8rem;
+    text-transform: uppercase;
+}
+
+.btn-hero {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+}
+
+.btn-hero:hover {
+    background: #0d426f;
+    border-color: #0d426f;
+    color: #fff;
+}
+
+.glass-panel {
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 1rem;
+    box-shadow: 0 10px 32px rgba(30, 50, 79, 0.12);
+    padding: 1.2rem;
+}
+
+.section-title {
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.card,
+.event-card,
+.auth-card,
+.metric-card,
+.empty-state {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 1rem;
+}
+
+.event-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.event-card:hover {
+    box-shadow: 0 14px 32px rgba(28, 56, 90, 0.14);
+    transform: translateY(-4px);
+}
+
+.auth-card {
+    box-shadow: 0 12px 28px rgba(27, 48, 78, 0.1);
+}
+
+.metric-card {
+    padding: 1rem;
+    box-shadow: 0 8px 18px rgba(17, 43, 73, 0.08);
+}
+
+.footer-section {
+    background: #122e4b;
+    color: #f2f6fc;
+}
+
+.reveal-up {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.reveal-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (max-width: 767px) {
+    .hero-wrap {
+        padding: 2.2rem 0 2rem;
+    }
+
+    .main-content {
+        min-height: auto;
+    }
+}
