@@ -55,7 +55,7 @@ def login(client, email="test@example.com", password="test123"):
 def login_admin(client):
     return client.post(
         "/login",
-        data={"email": "admin@university.edu", "password": "admin123"},
+        data={"email": "admin@eventflow.com", "password": "admin123"},
         follow_redirects=True,
     )
 

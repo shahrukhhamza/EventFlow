@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if event %}Edit Event{% else %}Create Event{% endif %} | UniEvents{% endblock %}
+{% block title %}{% if event %}Edit Event{% else %}Create Event{% endif %} | EventFlow{% endblock %}
 
 {% block content %}
 <section class="container">
@@ -25,10 +25,23 @@
                         <div class="col-md-6">
                             <label class="form-label" for="date">Date</label>
                             <input id="date" type="date" name="date" class="form-control" value="{{ event['date'] if event else '' }}" required>
+                            <div class="form-hint">Choose a future date for your demo event.</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="location">Location</label>
                             <input id="location" type="text" name="location" class="form-control" value="{{ event['location'] if event else '' }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label class="form-label" for="category">Category</label>
+                            <input id="category" type="text" name="category" class="form-control" value="{{ event['category'] if event else 'General' }}" placeholder="AI & Data Science, Cloud & DevOps, Career Development">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="image_url">Image URL</label>
+                            <input id="image_url" type="url" name="image_url" class="form-control" value="{{ event['image_url'] if event and event['image_url'] else '' }}" placeholder="https://...">
+                            <div class="form-hint">Optional, used on the event cards.</div>
                         </div>
                     </div>
 

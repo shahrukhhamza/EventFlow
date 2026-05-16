@@ -75,18 +75,19 @@ def test_playwright_signup_login_flow(app_instance):
 
 			unique_email = f"pw_{os.getpid()}@example.com"
 			page.goto(f"{base_url}/signup")
-			page.fill("input[name='name']", "Playwright Student")
-			page.fill("input[name='email']", unique_email)
-			page.fill("input[name='password']", "test123")
-			page.click("button[type='submit']")
+			page.get_by_label("Full Name").fill("Playwright Student")
+			page.get_by_label("Email").fill(unique_email)
+			page.get_by_label("Password").fill("test123")
+			page.get_by_role("button", name="Sign up").click()
+			page.wait_for_url("**/login")
 
-			page.goto(f"{base_url}/login")
-			page.fill("input[name='email']", unique_email)
-			page.fill("input[name='password']", "test123")
-			page.click("button[type='submit']")
+			page.get_by_label("Email").fill(unique_email)
+			page.get_by_label("Password").fill("test123")
+			page.get_by_role("button", name="Login").click()
+			page.wait_for_url("**/dashboard")
 
-			page.wait_for_selector("text=Dashboard")
-			assert "dashboard" in page.url.lower()
+			page.get_by_role("heading", name="Dashboard").wait_for(state="visible")
+			assert page.url.endswith("/dashboard")
 			browser.close()
 	except Exception as exc:
 		pytest.skip(f"Playwright browser not available in environment: {exc}")

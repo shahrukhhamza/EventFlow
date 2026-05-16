@@ -1,32 +1,72 @@
 {% extends 'base.html' %}
 
-{% block title %}Events | UniEvents{% endblock %}
+{% block title %}Events | EventFlow{% endblock %}
 
 {% block content %}
 <section class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <h2 class="section-title mb-0">Upcoming Events</h2>
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
+        <div>
+            <h2 class="section-title mb-1">Upcoming Events</h2>
+            <p class="text-muted mb-0">Search, filter, and explore the full EventFlow demo schedule.</p>
+        </div>
         {% if is_admin %}
         <a href="{{ url_for('create_event') }}" class="btn btn-dark">Create Event</a>
         {% endif %}
     </div>
+
+    <form class="filter-bar card p-3 p-md-4 mb-4" method="GET" data-event-filter>
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6 col-lg-5">
+                <label class="form-label" for="q">Search events</label>
+                <input id="q" type="search" name="q" class="form-control" placeholder="Search title, description, or location" value="{{ search_query }}">
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <label class="form-label" for="category">Category</label>
+                <select id="category" name="category" class="form-select">
+                    <option value="">All categories</option>
+                    {% for option in categories %}
+                    <option value="{{ option['category'] }}" {% if category_filter == option['category'] %}selected{% endif %}>{{ option['category'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex gap-2">
+                <button class="btn btn-dark w-100" type="submit">Filter</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('events') }}">Reset</a>
+            </div>
+        </div>
+    </form>
 
     <div class="row g-4">
         {% if events %}
             {% for event in events %}
             <div class="col-md-6 col-lg-4 reveal-up">
                 <div class="card event-card h-100">
+                    <div class="event-media">
+                        <img src="{{ event['image_url'] if event['image_url'] else url_for('static', filename='event-placeholder.svg') }}" alt="{{ event['title'] }}" loading="lazy">
+                        <span class="event-category">{{ event['category'] }}</span>
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-start mb-2 gap-2">
                             <h5 class="card-title mb-0">{{ event['title'] }}</h5>
-                            <span class="badge text-bg-light">{{ event['available_seats'] }} seats</span>
+                            <span class="badge event-seat-badge">{{ event['available_seats'] }} seats left</span>
                         </div>
-                        <p class="card-text text-muted">{{ event['description'] }}</p>
-                        <ul class="list-unstyled small text-secondary mb-4">
-                            <li><strong>Date:</strong> {{ event['date'] }}</li>
-                            <li><strong>Location:</strong> {{ event['location'] }}</li>
-                            <li><strong>Created by:</strong> {{ event['created_by_name'] }}</li>
-                        </ul>
+                        <p class="card-text text-muted flex-grow-1">{{ event['description'] }}</p>
+
+                        <div class="event-meta small text-secondary mb-3">
+                            <div><i class="bi bi-calendar3 me-1"></i>{{ event['date'] }}</div>
+                            <div><i class="bi bi-geo-alt me-1"></i>{{ event['location'] }}</div>
+                            <div><i class="bi bi-person-badge me-1"></i>{{ event['created_by_name'] }}</div>
+                        </div>
+
+                        <div class="seat-progress mb-3">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Capacity</span>
+                                <span>{{ event['available_seats'] }} / {{ event['seat_capacity'] }}</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: {% if event['seat_capacity'] > 0 %}{{ ((event['seat_capacity'] - event['available_seats']) * 100 / event['seat_capacity'])|round(0) }}%{% else %}0%{% endif %};"></div>
+                            </div>
+                        </div>
 
                         <div class="mt-auto d-flex flex-wrap gap-2">
                             {% if is_admin %}
@@ -50,9 +90,24 @@
             {% endfor %}
         {% else %}
         <div class="col-12">
-            <div class="empty-state text-center p-5">
+            <div class="empty-state empty-state--list text-center p-5">
+                <div class="empty-state-icon mb-3"><i class="bi bi-inbox"></i></div>
+                {% if search_query or category_filter %}
+                <h4>No matching events found.</h4>
+                <p class="text-muted mb-3">Try a different keyword or remove the category filter.</p>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                    <a href="{{ url_for('events') }}" class="btn btn-dark">Clear Filters</a>
+                    {% if is_admin %}
+                    <a href="{{ url_for('create_event') }}" class="btn btn-outline-dark">Create Event</a>
+                    {% endif %}
+                </div>
+                {% else %}
                 <h4>No events published yet.</h4>
-                <p class="text-muted mb-0">Please check back later.</p>
+                <p class="text-muted mb-3">Publish a few demo events so the platform feels alive during the showcase.</p>
+                {% if is_admin %}
+                <a href="{{ url_for('create_event') }}" class="btn btn-dark">Create First Event</a>
+                {% endif %}
+                {% endif %}
             </div>
         </div>
         {% endif %}

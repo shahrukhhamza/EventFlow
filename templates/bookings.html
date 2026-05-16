@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}{% if admin_view %}All Bookings{% else %}My Bookings{% endif %} | UniEvents{% endblock %}
+{% block title %}{% if admin_view %}All Bookings{% else %}My Bookings{% endif %} | EventFlow{% endblock %}
 
 {% block content %}
 <section class="container">
-    <h2 class="section-title mb-4">{% if admin_view %}All Bookings{% else %}My Bookings{% endif %}</h2>
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="section-title mb-1">{% if admin_view %}All Bookings{% else %}My Bookings{% endif %}</h2>
+            <p class="text-muted mb-0">Track who reserved each event and keep the demo workflow realistic.</p>
+        </div>
+        <a href="{{ url_for('events') }}" class="btn btn-outline-dark btn-sm">Browse Events</a>
+    </div>
 
     {% if bookings %}
     <div class="table-responsive card p-3">
