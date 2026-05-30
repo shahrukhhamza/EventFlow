@@ -32,43 +32,48 @@ def create_demo_event(client, title="Testing Bootcamp", seats="2"):
 		follow_redirects=True,
 	)
 	client.get("/logout", follow_redirects=True)
+	# return the id of the most recently created event
+	conn = client.application.get_db_connection()
+	row = conn.execute("SELECT id FROM events ORDER BY id DESC LIMIT 1").fetchone()
+	event_id = row["id"] if row is not None else None
+	conn.close()
+	return event_id
 
 
 def test_book_event_success(client, app_instance):
-	create_demo_event(client)
+	event_id = create_demo_event(client)
 	signup(client)
 	login(client)
 
-	response = client.post("/book-event/1", follow_redirects=True)
+	response = client.post(f"/book-event/{event_id}", follow_redirects=True)
 	assert response.status_code == 200
 	assert b"booked successfully" in response.data
 
 	conn = app_instance.get_db_connection()
-	seats = conn.execute("SELECT available_seats FROM events WHERE id = 1").fetchone()["available_seats"]
+	seats = conn.execute("SELECT available_seats FROM events WHERE id = ?", (event_id,)).fetchone()["available_seats"]
 	conn.close()
 	assert seats == 1
 
 
 def test_cannot_book_same_event_twice(client):
-	create_demo_event(client)
+	event_id = create_demo_event(client)
 	signup(client)
 	login(client)
-
-	client.post("/book-event/1", follow_redirects=True)
-	response = client.post("/book-event/1", follow_redirects=True)
+	client.post(f"/book-event/{event_id}", follow_redirects=True)
+	response = client.post(f"/book-event/{event_id}", follow_redirects=True)
 	assert b"already booked" in response.data
 
 
 def test_cannot_book_when_no_seats(client):
-	create_demo_event(client, seats="1")
+	event_id = create_demo_event(client, seats="1")
 
 	signup(client, email="first@example.com")
 	login(client, email="first@example.com")
-	client.post("/book-event/1", follow_redirects=True)
+	client.post(f"/book-event/{event_id}", follow_redirects=True)
 	client.get("/logout", follow_redirects=True)
 
 	signup(client, email="second@example.com")
 	login(client, email="second@example.com")
-	response = client.post("/book-event/1", follow_redirects=True)
+	response = client.post(f"/book-event/{event_id}", follow_redirects=True)
 
 	assert b"No seats available" in response.data

@@ -1,3 +1,28 @@
+# Oracle Design
+
+Overview:
+Each automated test includes explicit assertions that serve as oracles. We use multiple oracle types:
+
+- Expected-value comparisons:
+  - HTTP status codes and response messages (e.g., `200` and "Login successful").
+
+- Invariants / Assertions on state:
+  - Database invariants: `available_seats >= 0` enforced by tests in `tests/test_property_based.py`.
+  - Booking-count invariants: duplicate bookings should not increase booking count.
+
+- State validation / UI visibility:
+  - Playwright tests verify navigation (e.g., dashboard visible after login) and presence of headings.
+
+- API schema/response checks:
+  - `/api/events` returns a JSON list; tests assert listness and presence of `title`.
+
+How correctness is checked (per-phase):
+- Signup/Login: presence of success/failure messages, redirect to dashboard for success.
+- Booking: HTTP responses plus DB queries to confirm seat counts and booking entries.
+- Cancellation: response messages and DB state restored.
+- Property tests: invariants across randomized inputs and multiple sequences.
+
+If a test needs stronger oracles in future, add JSON schema checks, stricter HTML element asserts, or snapshot comparisons.
 # Oracle Design for EventFlow
 
 This project uses multiple oracle types so automated tests can explain not only what failed, but why the observed result is correct or incorrect.

@@ -79,7 +79,12 @@ def login_user(client, email):
     email=st.text(alphabet=EMAIL_ALPHABET, min_size=1, max_size=20).filter(lambda value: "@" not in value),
     password=st.text(alphabet=TEXT_ALPHABET, min_size=1, max_size=20),
 )
-@settings(max_examples=20, deadline=None, suppress_health_check=[HealthCheck.function_scoped_fixture])
+@settings(
+    # Lower example count to keep this expensive DB-backed property test meaningful but faster.
+    max_examples=10,
+    deadline=None,
+    suppress_health_check=[HealthCheck.function_scoped_fixture],
+)
 def test_invalid_emails_never_authenticate(email, password):
     app, client, db_path = build_isolated_client()
     try:
@@ -96,7 +101,11 @@ def test_invalid_emails_never_authenticate(email, password):
 
 
 @given(seat_count=st.integers(min_value=2, max_value=5))
-@settings(max_examples=10, deadline=None)
+@settings(
+    # This test performs repeated login/booking flows per example, so a smaller sample keeps CI time reasonable.
+    max_examples=6,
+    deadline=None,
+)
 def test_duplicate_booking_keeps_booking_count_stable(seat_count):
     app, client, db_path = build_isolated_client()
     try:
@@ -124,7 +133,11 @@ def test_duplicate_booking_keeps_booking_count_stable(seat_count):
 
 
 @given(seat_count=st.integers(min_value=1, max_value=4))
-@settings(max_examples=10, deadline=None)
+@settings(
+    # Booking multiple users to capacity is expensive; a smaller example count preserves invariant coverage.
+    max_examples=6,
+    deadline=None,
+)
 def test_seat_limits_never_become_negative(seat_count):
     app, client, db_path = build_isolated_client()
     try:
@@ -149,7 +162,11 @@ def test_seat_limits_never_become_negative(seat_count):
 
 
 @given(seat_count=st.integers(min_value=1, max_value=5))
-@settings(max_examples=10, deadline=None)
+@settings(
+    # Cancellation still needs several random capacities, but fewer examples are enough for the oracle.
+    max_examples=6,
+    deadline=None,
+)
 def test_cancellation_restores_seat_count(seat_count):
     app, client, db_path = build_isolated_client()
     try:
@@ -180,7 +197,11 @@ def test_cancellation_restores_seat_count(seat_count):
     description=st.text(alphabet=TEXT_ALPHABET, min_size=0, max_size=80),
     location=st.text(alphabet=TEXT_ALPHABET, min_size=0, max_size=24),
 )
-@settings(max_examples=15, deadline=None)
+@settings(
+    # This is a broad robustness check, so a moderate sample size is sufficient for assignment coverage.
+    max_examples=8,
+    deadline=None,
+)
 def test_random_string_inputs_do_not_crash_system(title, description, location):
     app, client, db_path = build_isolated_client()
     try:

@@ -2,6 +2,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+import gc
 
 import pytest
 
@@ -12,8 +13,27 @@ if str(PROJECT_ROOT) not in sys.path:
 from app import create_app
 
 
-@pytest.fixture()
-def app_instance():
+def _remove_db_file(db_path):
+    if not os.path.exists(db_path):
+        return
+
+    import time
+
+    retries = 20
+    for attempt in range(retries):
+        gc.collect()
+        try:
+            os.unlink(db_path)
+            return
+        except PermissionError:
+            if attempt < retries - 1:
+                time.sleep(0.1)
+            else:
+                raise
+
+
+@pytest.fixture(scope="session")
+def base_app():
     fd, db_path = tempfile.mkstemp(suffix=".db")
     os.close(fd)
 
@@ -25,10 +45,24 @@ def app_instance():
         }
     )
 
+    app._bootstrap_db_path = db_path
     yield app
 
-    if os.path.exists(db_path):
-        os.unlink(db_path)
+    _remove_db_file(db_path)
+
+
+@pytest.fixture()
+def app_instance(base_app):
+    fd, db_path = tempfile.mkstemp(suffix=".db")
+    os.close(fd)
+
+    base_app.config["DATABASE"] = db_path
+    base_app.init_db()
+    base_app._current_test_db_path = db_path
+
+    yield base_app
+
+    _remove_db_file(db_path)
 
 
 @pytest.fixture()
